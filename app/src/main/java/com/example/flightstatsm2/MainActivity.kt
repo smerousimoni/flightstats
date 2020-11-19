@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         dpd.show()
     }
 
-    private fun displaySelectedDate(textView:  , calendar: Calendar) {
+    private fun displaySelectedDate(textView: TextView, calendar: Calendar) {
         textView.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(calendar.time)
     }
 }
