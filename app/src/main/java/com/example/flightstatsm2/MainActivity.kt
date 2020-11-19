@@ -1,12 +1,14 @@
 package com.example.flightstatsm2
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -14,19 +16,16 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
     val DATE_FORMAT = "dd MMM yyy"
-
-    val fromCalendar = Calendar.getInstance()
-    val toCalendar = Calendar.getInstance()
-
-    val airportList = Utils.generateAirportList()
+    lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         val airportNamesList = ArrayList<String>()
 
-        for (airport in airportList) {
+        for (airport in viewModel.getAirportListLiveData().value!!) {
             airportNamesList.add(airport.getFormattedName())
         }
 
@@ -39,23 +38,35 @@ class MainActivity : AppCompatActivity() {
 
         spinner_airport.adapter = adapter
 
-        displaySelectedDate(fromDate, fromCalendar)
-        displaySelectedDate(toDate, toCalendar)
 
-        fromDate.setOnClickListener { showDatePicker(fromDate, fromCalendar) }
-        toDate.setOnClickListener { showDatePicker(toDate, toCalendar) }
+        viewModel.getBeginDateLiveData()
+            .observe(this, { displaySelectedDate(fromDate, it) })
+
+        viewModel.getEndDateLiveData()
+            .observe(this, { displaySelectedDate(toDate, it) })
+
+        fromDate.setOnClickListener { showDatePicker(fromDate) }
+        toDate.setOnClickListener { showDatePicker(toDate) }
 
         searchButton.setOnClickListener { search() }
     }
 
-    private fun showDatePicker(textView: TextView, calendar: Calendar) {
+    private fun showDatePicker(clickedView: View) {
+        val calendar = if (clickedView.id == fromDate.id) {
+            viewModel.getBeginDateLiveData().value
+        } else {
+            viewModel.getEndDateLiveData().value
+        }
         val dpd = DatePickerDialog(
             this,
             DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                calendar.set(year,monthOfYear,dayOfMonth)
-                displaySelectedDate(textView, calendar)
+                if (clickedView.id == fromDate.id){
+                    viewModel.updateBeginCalendar(year, monthOfYear, dayOfMonth)
+                }else{
+                    viewModel.updateEndCalendar(year, monthOfYear, dayOfMonth)
+                }
             },
-            calendar.get(Calendar.YEAR),
+            calendar!!.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
@@ -66,18 +77,23 @@ class MainActivity : AppCompatActivity() {
         textView.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(calendar.time)
     }
 
-    private fun search(){
-        // récupèrer aéroport
-        val icao = airportList[spinner_airport.selectedItemPosition].icao
+    private fun search() {
+        // récupérer aéroport
+        val icao =
+            viewModel.getAirportListLiveData().value!![spinner_airport.selectedItemPosition].icao
 
-        // récupèrer isArrival
+        // récupérer isArrival
         val isArrival = switch_type.isChecked
 
         // récupérer les 2 dates
-        val begin = fromCalendar.timeInMillis / 1000
-        val end = toCalendar.timeInMillis / 1000
+        //val begin = fromCalendar.timeInMillis / 1000
+        //val end = toCalendar.timeInMillis / 1000
 
-        Log.d("MainActivity", "icao = $icao, isArrival = $isArrival, begin = $begin, end = $end")
+       // Log.d("MainActivity", "icao = $icao, isArrival = $isArrival, begin = $begin, end = $end")
         // démarrer une activité et y passer les infos
+
+//après avor récupérer la data des vues, appeler une méthode process search
+        val i = Intent(this, FlightListActivity::class.java)
+        startActivity(i)
     }
 }

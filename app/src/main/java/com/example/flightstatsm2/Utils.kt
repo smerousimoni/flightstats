@@ -2,6 +2,8 @@ package com.example.flightstatsm2
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
@@ -9,7 +11,7 @@ import org.apache.commons.io.IOUtils
 import org.json.JSONArray
 import java.io.*
 import java.nio.charset.Charset
-
+import java.util.logging.Handler
 
 
 /**
@@ -22,7 +24,16 @@ class Utils private constructor() {
 
     companion object {
 
-        fun generateAirportList(): List<Airport>{
+        var liveData = MutableLiveData<String>()
+
+        fun updateLiveData(value: String) {
+            android.os.Handler().postDelayed(Runnable {
+                Log.d("MAIN", "update of the value")
+                liveData.value = value
+            }, 2000)
+        }
+
+        fun generateAirportList(): List<Airport> {
             val airportList = ArrayList<Airport>()
 
             for (airportObject in getAirportsListJson()) {
@@ -32,7 +43,7 @@ class Utils private constructor() {
             return airportList
         }
 
-        fun getAirportsListJson() : JsonArray{
+        fun getAirportsListJson(): JsonArray {
             var input: InputStream? = null
             input = FlightApplication.appAssetManager.open("airports.json")
             val parser = JsonParser()
