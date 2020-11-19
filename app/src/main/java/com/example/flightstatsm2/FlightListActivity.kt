@@ -8,7 +8,7 @@ import kotlinx.android.synthetic.main.activity_flight_list.*
 class FlightListActivity : AppCompatActivity() {
 
     lateinit var viewModel: FlightListViewModel
-
+c
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_flight_list)
