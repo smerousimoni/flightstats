@@ -78,22 +78,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun search() {
-        // récupérer aéroport
-        val icao =
-            viewModel.getAirportListLiveData().value!![spinner_airport.selectedItemPosition].icao
-
-        // récupérer isArrival
-        val isArrival = switch_type.isChecked
-
-        // récupérer les 2 dates
-        //val begin = fromCalendar.timeInMillis / 1000
-        //val end = toCalendar.timeInMillis / 1000
-
-       // Log.d("MainActivity", "icao = $icao, isArrival = $isArrival, begin = $begin, end = $end")
-        // démarrer une activité et y passer les infos
-
-//après avor récupérer la data des vues, appeler une méthode process search
-        val i = Intent(this, FlightListActivity::class.java)
+        val i = Intent(this,FlightListActivity::class.java)
+        i.putExtra("begin", viewModel.getBeginDateLiveData().value!!.timeInMillis / 1000)
+        i.putExtra("end", viewModel.getEndDateLiveData().value!!.timeInMillis / 1000)
+        i.putExtra("icao", viewModel?.getAirportListLiveData().value?.get(spinner_airport.selectedItemPosition)?.icao)
+        i.putExtra("isArrival", switch_type.isChecked)
         startActivity(i)
     }
 }
