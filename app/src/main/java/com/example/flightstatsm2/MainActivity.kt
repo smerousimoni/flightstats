@@ -18,12 +18,14 @@ class MainActivity : AppCompatActivity() {
     val fromCalendar = Calendar.getInstance()
     val toCalendar = Calendar.getInstance()
 
+    val airportList = Utils.generateAirportList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val airportNamesList = ArrayList<String>()
-        val airportList = Utils.generateAirportList()
+
         for (airport in airportList) {
             airportNamesList.add(airport.getFormattedName())
         }
@@ -40,8 +42,10 @@ class MainActivity : AppCompatActivity() {
         displaySelectedDate(fromDate, fromCalendar)
         displaySelectedDate(toDate, toCalendar)
 
-        fromDate.setOnClickListener({ showDatePicker(fromDate, fromCalendar) })
-        toDate.setOnClickListener({ showDatePicker(toDate, toCalendar) })
+        fromDate.setOnClickListener { showDatePicker(fromDate, fromCalendar) }
+        toDate.setOnClickListener { showDatePicker(toDate, toCalendar) }
+
+        searchButton.setOnClickListener { search() }
     }
 
     private fun showDatePicker(textView: TextView, calendar: Calendar) {
@@ -60,5 +64,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun displaySelectedDate(textView: TextView, calendar: Calendar) {
         textView.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(calendar.time)
+    }
+
+    private fun search(){
+        // récupèrer aéroport
+        val icao = airportList[spinner_airport.selectedItemPosition].icao
+
+        // récupèrer isArrival
+        val isArrival = switch_type.isChecked
+
+        // récupérer les 2 dates
+        val begin = fromCalendar.timeInMillis / 1000
+        val end = toCalendar.timeInMillis / 1000
+
+        Log.d("MainActivity", "icao = $icao, isArrival = $isArrival, begin = $begin, end = $end")
+        // démarrer une activité et y passer les infos
     }
 }
