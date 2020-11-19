@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
  * Created by sergio on 19/11/2020
  * All rights reserved GoodBarber
  */
-class FlightListViewModel : ViewModel()  {
+class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
 
 
     val flightListLiveData: MutableLiveData<List<FlightModel>> = MutableLiveData()
@@ -31,6 +31,23 @@ class FlightListViewModel : ViewModel()  {
         } else {
             "https://opensky-network.org/api/flights/departure"
         }
+
+        viewModelScope.launch {
+
+            val result = withContext(Dispatchers.IO) {
+                RequestsManager.getSuspended(baseUrl, getRequestParams(searchDataModel))
+            }
+            if (result == null) {
+                Log.d("Request", "problem")
+
+            } else {
+                Log.d("Request", result)
+
+            }
+
+        }
+        // SearchFlightsAsyncTask(this).execute(searchDataModel)
+
     }
 
     private fun getRequestParams(searchModel: SearchDataModel?): Map<String, String>? {
@@ -41,5 +58,13 @@ class FlightListViewModel : ViewModel()  {
             params["end"] = searchModel.end.toString()
         }
         return params
+    }
+
+    override fun onRequestSuccess(result: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onRequestFailed() {
+        TODO("Not yet implemented")
     }
 }
