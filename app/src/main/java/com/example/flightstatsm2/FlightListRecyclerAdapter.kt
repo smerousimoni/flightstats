@@ -17,6 +17,7 @@ class FlightListRecyclerAdapter : RecyclerView.Adapter<FlightListRecyclerAdapter
     interface OnItemClickListener{
         fun onItemClicked(flightName : String)
     }
+
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     }
