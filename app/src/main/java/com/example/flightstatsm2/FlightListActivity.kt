@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.android.synthetic.main.activity_flight_list.*
 
 
 class FlightListActivity : AppCompatActivity() {
@@ -14,6 +15,7 @@ class FlightListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_flight_list)
 
+        val isMobile = detail_container == null
 
         viewModel = ViewModelProvider(this).get(FlightListViewModel::class.java)
         viewModel.search(
@@ -27,11 +29,18 @@ class FlightListActivity : AppCompatActivity() {
             //switch fragment
             val newFragment: FlightDetailFragment = FlightDetailFragment.newInstance()
             val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+            if (isMobile) {
+                transaction.add(R.id.activityContainer, newFragment)
+                transaction.addToBackStack(null)
 
-            transaction.add(R.id.activityContainer, newFragment)
-            transaction.addToBackStack(null)
+                transaction.commit()
+            }
+            else{
+                transaction.add(R.id.detail_container, newFragment)
+                transaction.addToBackStack(null)
 
-            transaction.commit()
+                transaction.commit()
+            }
         })
 
     }
