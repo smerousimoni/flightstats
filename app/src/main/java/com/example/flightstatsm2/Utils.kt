@@ -11,7 +11,10 @@ import org.apache.commons.io.IOUtils
 import org.json.JSONArray
 import java.io.*
 import java.nio.charset.Charset
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.logging.Handler
+import kotlin.collections.ArrayList
 
 
 /**
@@ -110,6 +113,20 @@ class Utils private constructor() {
             }
         }
 
+        fun getFlightListFromString(arrayAsString: String): List<FlightModel>{
+            val flightJsonArray = convertStringToJsonArray(arrayAsString)
+            val flightModelList = ArrayList<FlightModel>()
+            for(flightJson in flightJsonArray){
+                flightModelList.add(Gson().fromJson(flightJson.asJsonObject, FlightModel::class.java))
+            }
+            return flightModelList
+        }
+
+        private fun convertStringToJsonArray(arrayAsString: String): JsonArray{
+            val jsonElement = JsonParser.parseString(arrayAsString)
+            return jsonElement.asJsonArray
+        }
+
         fun _makeJsonAirportLight() {
             var input: InputStream? = null
 
@@ -127,5 +144,77 @@ class Utils private constructor() {
 
             _saveData(filteredAirports.toString().toByteArray(), "tempJson")
         }
+
+        fun getDateHourFormat(): SimpleDateFormat {
+            val format = "dd/MM/yy HH:mm"
+            return SimpleDateFormat(format, Locale.US)
+        }
+
+        fun getHourMinuteFormat(): SimpleDateFormat {
+            val format = "HH:mm"
+            return SimpleDateFormat(format, Locale.US)
+        }
+
+        fun getStandardDateFormat(): SimpleDateFormat {
+            val format = "dd/MM/yy"
+            return SimpleDateFormat(format, Locale.US)
+        }
+
+        fun getCompactDateFormat(): SimpleDateFormat {
+            val format = "dd/MM"
+            return SimpleDateFormat(format, Locale.US)
+        }
+
+        fun timestampToHourMinute(time: Long): String {
+            return getHourMinuteFormat().format(Date(time))
+        }
+
+        fun dateToString(date: Date?): String {
+            return dateToString(date, false)
+        }
+
+        fun dateToString(
+            date: Date?,
+            compactFormat: Boolean
+        ): String {
+            if(date == null)
+                return ""
+            return if (compactFormat) getCompactDateFormat()
+                .format(date) else getStandardDateFormat()
+                .format(date)
+        }
+
+        fun timestampToString(time: Long): String? {
+            return timestampToString(time, false)
+        }
+
+        fun timestampToString(
+            time: Long,
+            compactFormat: Boolean
+        ): String? {
+            val date = Date(time)
+            return if (compactFormat) dateToString(date, true) else dateToString(date)
+        }
+
+        fun formatFlightDuration(time: Long): String? {
+            var time = time
+            if (time < 1) return ""
+            time /= 60
+            val hour = time / 60
+            val minute = time % 60
+            val duration = StringBuilder()
+            return if (hour > 0) {
+                duration.append(hour).append("h")
+                if (minute < 10) {
+                    duration.append("0").append(minute).toString()
+                } else duration.append(minute).toString()
+            } else {
+                if (minute < 10) {
+                    duration.append("0").append(minute).append("min").toString()
+                } else duration.append(minute).append("min").toString()
+            }
+        }
     }
+
+
 }

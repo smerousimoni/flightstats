@@ -38,11 +38,12 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
                 RequestsManager.getSuspended(baseUrl, getRequestParams(searchDataModel))
             }
             if (result == null) {
-                Log.d("Request", "problem")
+                Log.e("Request", "problem")
 
             } else {
-                Log.d("Request", result)
-
+                val flightList = Utils.getFlightListFromString(result)
+                Log.d("models list", flightList.toString())
+                flightListLiveData.value = flightList
             }
 
         }
