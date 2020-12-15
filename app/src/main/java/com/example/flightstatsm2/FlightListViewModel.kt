@@ -1,6 +1,7 @@
 package com.example.flightstatsm2
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,12 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
 
     val flightListLiveData: MutableLiveData<List<FlightModel>> = MutableLiveData()
     val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    private val selectedFlightNameLiveData: MutableLiveData<String> = MutableLiveData()
+
+    fun getSelectedFlightNameLiveData(): LiveData<String> {
+        return selectedFlightNameLiveData
+    }
+
 
     fun search(icao: String, isArrival: Boolean, begin: Long, end: Long) {
 
@@ -51,7 +58,6 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
 
         }
         // SearchFlightsAsyncTask(this).execute(searchDataModel)
-
     }
 
     private fun getRequestParams(searchModel: SearchDataModel?): Map<String, String>? {
@@ -70,5 +76,9 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
 
     override fun onRequestFailed() {
         TODO("Not yet implemented")
+    }
+
+    fun updateSelectedFlightName(flightName: String) {
+        selectedFlightNameLiveData.value = flightName
     }
 }

@@ -1,16 +1,12 @@
 package com.example.flightstatsm2
 
-import android.opengl.Visibility
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.activity_flight_list.*
 
-class FlightListActivity : AppCompatActivity(), FlightListRecyclerAdapter.OnItemClickListener {
+
+class FlightListActivity : AppCompatActivity() {
 
     private lateinit var viewModel: FlightListViewModel
 
@@ -27,31 +23,16 @@ class FlightListActivity : AppCompatActivity(), FlightListRecyclerAdapter.OnItem
             intent.getLongExtra("end", 0)
         )
 
-        viewModel.flightListLiveData.observe(this, Observer {
-            if (it == null || it.isEmpty()) {
-                //DISPLAY ERROR
-            } else {
-                val adapter = FlightListRecyclerAdapter()
-                adapter.flightList = it
-                adapter.onItemClickListener = this
-                recyclerView.adapter = adapter
-                recyclerView.layoutManager =
-                    LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-            }
+        viewModel.getSelectedFlightNameLiveData().observe(this, {
+            //switch fragment
+            val newFragment: FlightDetailFragment = FlightDetailFragment.newInstance()
+            val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+
+            transaction.add(R.id.activityContainer, newFragment)
+            transaction.addToBackStack(null)
+
+            transaction.commit()
         })
 
-        viewModel.isLoadingLiveData.observe(this, Observer {
-            if (it) {
-                progressBar.visibility = View.VISIBLE
-            } else {
-                progressBar.visibility = View.INVISIBLE
-            }
-        })
-
-    }
-
-    override fun onItemClicked(flightName: String) {
-        //DO SOMETHING WHEN CLICKING ON THE FLIGHT NAME
-        Log.d("ViewClicked", flightName)
     }
 }
