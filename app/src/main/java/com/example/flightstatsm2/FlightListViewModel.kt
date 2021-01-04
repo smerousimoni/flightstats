@@ -19,6 +19,8 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
     val flightListLiveData: MutableLiveData<List<FlightModel>> = MutableLiveData()
     val isLoadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
     private val selectedFlightNameLiveData: MutableLiveData<String> = MutableLiveData()
+    private val selectedIcaoLiveData: MutableLiveData<String> = MutableLiveData() //A CHANGER
+    private val selectedTimeLiveData: MutableLiveData<Long> = MutableLiveData() //A CHANGE
 
     fun getSelectedFlightNameLiveData(): LiveData<String> {
         return selectedFlightNameLiveData
@@ -63,19 +65,36 @@ class FlightListViewModel : ViewModel(), RequestsManager.RequestListener {
     private fun getRequestParams(searchModel: SearchDataModel?): Map<String, String>? {
         val params = HashMap<String, String>()
         if (searchModel != null) {
-            params["airport"] = searchModel.icao
-            params["begin"] = searchModel.begin.toString()
             params["end"] = searchModel.end.toString()
+            params["begin"] = searchModel.begin.toString()
+            params["airport"] = searchModel.icao
+
+
         }
         return params
     }
 
     override fun onRequestSuccess(result: String?) {
-        TODO("Not yet implemented")
+        println(result)
     }
 
     override fun onRequestFailed() {
         TODO("Not yet implemented")
+    }
+
+    fun getSelectedIcao(): String {
+        return selectedIcaoLiveData.value!!
+    }
+    fun getSelectedTime(): Long {
+        return selectedTimeLiveData.value!!
+    }
+
+    fun updateSelectedIcao(icao: String){
+        selectedIcaoLiveData.value = icao
+    }
+
+    fun updateSelectedTime(time: Long){
+        selectedTimeLiveData.value = time
     }
 
     fun updateSelectedFlightName(flightName: String) {

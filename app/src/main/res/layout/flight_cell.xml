@@ -40,13 +40,16 @@
         android:layout_toEndOf="@id/left_container"
         >
 
-        <ImageView
+        <TextView
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
             android:layout_marginRight="7dp"
             android:layout_toLeftOf="@id/flight_info_container"
-            android:background="#000000" />
+            android:background="#00FFFFFF"
+            android:scaleY="3"
+            android:text=">"
+            android:textScaleX="3" />
 
         <LinearLayout
             android:id="@+id/flight_info_container"
@@ -70,13 +73,16 @@
 
         </LinearLayout>
 
-        <ImageView
+        <TextView
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="7dp"
             android:layout_toRightOf="@id/flight_info_container"
-            android:background="#FF0000" />
+            android:background="#00FFFFFF"
+            android:scaleY="3"
+            android:text=">"
+            android:textScaleX="3" />
     </RelativeLayout>
 
     <LinearLayout
